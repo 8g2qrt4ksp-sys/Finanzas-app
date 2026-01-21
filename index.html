@@ -3,26 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mis Finanzas</title>
+<title>Finanzas Lucas Narváez</title>
 <link rel="manifest" href="manifest.json">
+
 <style>
-body{font-family:Arial;background:#f2f2f2;margin:0}
-header{background:#2c3e50;color:#fff;text-align:center;padding:15px;font-size:20px}
-section{background:#fff;margin:10px;padding:15px;border-radius:8px}
-label{display:block;margin-top:10px}
-input{width:100%;padding:10px;font-size:16px}
-button{width:100%;padding:15px;font-size:18px;background:#27ae60;color:#fff;border:none;border-radius:8px;margin-top:15px}
-.resultado{font-size:18px;margin-top:8px}
+body{
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
+  margin:0;
+}
+header{
+  background:#2c3e50;
+  color:white;
+  text-align:center;
+  padding:15px;
+}
+header img{
+  height:80px;
+  margin-bottom:8px;
+}
+section{
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:8px;
+}
+label{
+  display:block;
+  margin-top:10px;
+}
+input{
+  width:100%;
+  padding:10px;
+  font-size:16px;
+}
+button{
+  width:100%;
+  padding:15px;
+  font-size:18px;
+  background:#c0392b;
+  color:white;
+  border:none;
+  border-radius:8px;
+  margin-top:15px;
+}
+.resultado{
+  font-size:18px;
+  margin-top:8px;
+}
 .positivo{color:green}
 .negativo{color:red}
 </style>
 </head>
+
 <body>
 
-<header>Control de Finanzas</header>
+<header>
+  <img src="logo.png" alt="Lucas Narváez Bombero">
+  <div><strong>Finanzas de Lucas Narváez</strong></div>
+</header>
 
 <section>
-<h3>Ingresos</h3>
+<h3>🚒 Ingresos</h3>
 <label>Sueldo</label>
 <input type="number" id="ing1">
 <label>Extra</label>
@@ -30,7 +72,7 @@ button{width:100%;padding:15px;font-size:18px;background:#27ae60;color:#fff;bord
 </section>
 
 <section>
-<h3>Gastos Fijos</h3>
+<h3>📌 Gastos Fijos</h3>
 <label>Alquiler</label>
 <input type="number" id="gf1">
 <label>Servicios</label>
@@ -40,7 +82,7 @@ button{width:100%;padding:15px;font-size:18px;background:#27ae60;color:#fff;bord
 </section>
 
 <section>
-<h3>Gastos Variables</h3>
+<h3>⚠️ Gastos Variables</h3>
 <label>Imprevisto 1</label>
 <input type="number" id="gv1">
 <label>Imprevisto 2</label>
@@ -49,30 +91,47 @@ button{width:100%;padding:15px;font-size:18px;background:#27ae60;color:#fff;bord
 
 <section>
 <button onclick="calcular()">Calcular</button>
-<div class="resultado">Ingresos: $<span id="ti">0</span></div>
-<div class="resultado">Gastos: $<span id="tg">0</span></div>
-<div class="resultado">Ahorro: $<span id="ah">0</span></div>
+
+<div class="resultado">Ingresos: $ <span id="ti">0</span></div>
+<div class="resultado">Gastos: $ <span id="tg">0</span></div>
+<div class="resultado">Ahorro: $ <span id="ah">0</span></div>
 </section>
 
 <script>
-function v(id){return Number(document.getElementById(id).value)||0}
+function v(id){
+  return Number(document.getElementById(id).value) || 0;
+}
+
 function calcular(){
- let ingresos=v("ing1")+v("ing2")
- let gastos=v("gf1")+v("gf2")+v("gf3")+v("gv1")+v("gv2")
- let ahorro=ingresos-gastos
- document.getElementById("ti").innerText=ingresos
- document.getElementById("tg").innerText=gastos
- let a=document.getElementById("ah")
- a.innerText=ahorro
- a.className=ahorro>=0?"positivo":"negativo"
- localStorage.setItem("finanzas",JSON.stringify({ing1:v("ing1"),ing2:v("ing2"),gf1:v("gf1"),gf2:v("gf2"),gf3:v("gf3"),gv1:v("gv1"),gv2:v("gv2")}))
+  let ingresos = v("ing1") + v("ing2");
+  let gastos = v("gf1") + v("gf2") + v("gf3") + v("gv1") + v("gv2");
+  let ahorro = ingresos - gastos;
+
+  document.getElementById("ti").innerText = ingresos;
+  document.getElementById("tg").innerText = gastos;
+
+  let a = document.getElementById("ah");
+  a.innerText = ahorro;
+  a.className = ahorro >= 0 ? "positivo" : "negativo";
+
+  localStorage.setItem("finanzasLucas", JSON.stringify({
+    ing1:v("ing1"), ing2:v("ing2"),
+    gf1:v("gf1"), gf2:v("gf2"), gf3:v("gf3"),
+    gv1:v("gv1"), gv2:v("gv2")
+  }));
 }
-window.onload=()=>{
- let d=JSON.parse(localStorage.getItem("finanzas")||"{}")
- for(let k in d){if(document.getElementById(k))document.getElementById(k).value=d[k]}
- calcular()
+
+window.onload = () => {
+  let d = JSON.parse(localStorage.getItem("finanzasLucas") || "{}");
+  for(let k in d){
+    if(document.getElementById(k)) document.getElementById(k).value = d[k];
+  }
+  calcular();
+};
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
 }
-if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js")}
 </script>
 
 </body>
