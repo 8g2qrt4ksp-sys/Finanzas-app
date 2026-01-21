@@ -16,17 +16,28 @@ header{
   background:#2c3e50;
   color:white;
   text-align:center;
-  padding:15px;
+  padding:20px 10px;
+  min-height:140px; /* 🔑 CLAVE */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 }
 header img{
+  display:block;          /* 🔑 CLAVE */
   height:80px;
+  max-width:90%;
   margin-bottom:8px;
 }
 section{
   background:white;
   margin:10px;
   padding:15px;
-  border-radius:8px;
+  border-radius:10px;
+}
+section h3{
+  margin-top:0;
+  color:#2c3e50;
 }
 label{
   display:block;
@@ -44,15 +55,35 @@ button{
   background:#c0392b;
   color:white;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   margin-top:15px;
+}
+button:active{
+  transform:scale(0.97);
+  opacity:0.9;
 }
 .resultado{
   font-size:18px;
   margin-top:8px;
 }
-.positivo{color:green}
-.negativo{color:red}
+.resultado span{
+  transition:all 0.3s ease;
+  font-weight:bold;
+}
+.flash{transform:scale(1.1)}
+.barra-fondo{
+  background:#ddd;
+  border-radius:10px;
+  height:14px;
+  margin-top:8px;
+}
+.barra{
+  height:14px;
+  border-radius:10px;
+  width:0%;
+}
+.positivo{color:#27ae60}
+.negativo{color:#c0392b}
 </style>
 </head>
 
@@ -60,33 +91,33 @@ button{
 
 <header>
   <img src="logo.png" alt="Lucas Narváez Bombero">
-  <div><strong>Finanzas de Lucas Narváez</strong></div>
+  <strong>Finanzas de Lucas Narváez</strong>
 </header>
 
 <section>
-<h3>🚒 Ingresos</h3>
+<h3> Ingresos</h3>
 <label>Sueldo</label>
-<input type="number" id="ing1">
+<input type="number" id="ing1" oninput="calcular()">
 <label>Extra</label>
-<input type="number" id="ing2">
+<input type="number" id="ing2" oninput="calcular()">
 </section>
 
 <section>
 <h3>📌 Gastos Fijos</h3>
 <label>Alquiler</label>
-<input type="number" id="gf1">
+<input type="number" id="gf1" oninput="calcular()">
 <label>Servicios</label>
-<input type="number" id="gf2">
+<input type="number" id="gf2" oninput="calcular()">
 <label>Internet</label>
-<input type="number" id="gf3">
+<input type="number" id="gf3" oninput="calcular()">
 </section>
 
 <section>
 <h3>⚠️ Gastos Variables</h3>
 <label>Imprevisto 1</label>
-<input type="number" id="gv1">
+<input type="number" id="gv1" oninput="calcular()">
 <label>Imprevisto 2</label>
-<input type="number" id="gv2">
+<input type="number" id="gv2" oninput="calcular()">
 </section>
 
 <section>
@@ -95,41 +126,63 @@ button{
 <div class="resultado">Ingresos: $ <span id="ti">0</span></div>
 <div class="resultado">Gastos: $ <span id="tg">0</span></div>
 <div class="resultado">Ahorro: $ <span id="ah">0</span></div>
+
+<div class="barra-fondo">
+  <div id="barra" class="barra"></div>
+</div>
+
+<div id="mensaje" style="margin-top:10px;font-weight:bold"></div>
 </section>
 
 <script>
-function v(id){
-  return Number(document.getElementById(id).value) || 0;
+function v(id){return Number(document.getElementById(id).value)||0}
+
+function animar(id){
+  let el=document.getElementById(id);
+  el.classList.remove("flash");
+  void el.offsetWidth;
+  el.classList.add("flash");
 }
 
 function calcular(){
-  let ingresos = v("ing1") + v("ing2");
-  let gastos = v("gf1") + v("gf2") + v("gf3") + v("gv1") + v("gv2");
-  let ahorro = ingresos - gastos;
+  let ingresos=v("ing1")+v("ing2");
+  let gastos=v("gf1")+v("gf2")+v("gf3")+v("gv1")+v("gv2");
+  let ahorro=ingresos-gastos;
 
-  document.getElementById("ti").innerText = ingresos;
-  document.getElementById("tg").innerText = gastos;
+  document.getElementById("ti").innerText=ingresos;
+  document.getElementById("tg").innerText=gastos;
 
-  let a = document.getElementById("ah");
-  a.innerText = ahorro;
-  a.className = ahorro >= 0 ? "positivo" : "negativo";
+  let a=document.getElementById("ah");
+  a.innerText=ahorro;
+  a.className=ahorro>=0?"positivo":"negativo";
 
-  localStorage.setItem("finanzasLucas", JSON.stringify({
-    ing1:v("ing1"), ing2:v("ing2"),
-    gf1:v("gf1"), gf2:v("gf2"), gf3:v("gf3"),
-    gv1:v("gv1"), gv2:v("gv2")
+  ["ti","tg","ah"].forEach(animar);
+
+  let barra=document.getElementById("barra");
+  let pct=ingresos>0?Math.max(0,(ahorro/ingresos)*100):0;
+  barra.style.width=pct+"%";
+  barra.style.background=ahorro>=0?"#27ae60":"#c0392b";
+
+  document.getElementById("mensaje").innerText=
+    ahorro>=0?"🔥 Buen trabajo, estás ahorrando":
+              "⚠️ Atención, estás gastando de más";
+
+  localStorage.setItem("finanzasLucas",JSON.stringify({
+    ing1:v("ing1"),ing2:v("ing2"),
+    gf1:v("gf1"),gf2:v("gf2"),gf3:v("gf3"),
+    gv1:v("gv1"),gv2:v("gv2")
   }));
 }
 
-window.onload = () => {
-  let d = JSON.parse(localStorage.getItem("finanzasLucas") || "{}");
+window.onload=()=>{
+  let d=JSON.parse(localStorage.getItem("finanzasLucas")||"{}");
   for(let k in d){
-    if(document.getElementById(k)) document.getElementById(k).value = d[k];
+    if(document.getElementById(k))document.getElementById(k).value=d[k];
   }
   calcular();
 };
 
-if("serviceWorker" in navigator){
+if("serviceWorker"in navigator){
   navigator.serviceWorker.register("sw.js");
 }
 </script>
